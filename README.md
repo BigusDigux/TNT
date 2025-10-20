@@ -1,3 +1,3 @@
 # TNT
 Micromouse TNT
-![PC Layout](Images/PCB_Layout.png)
+![PCB Layout](Images/PCB_Layout.png)
