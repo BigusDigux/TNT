@@ -1,0 +1,34 @@
+================================================================================
+MODULE: VL53L0X Time-of-Flight (ToF) Distance Sensor Driver (STM32F1 HAL)
+================================================================================
+
+1. FILES
+--------
+- VL53L0X.h : Defines the configuration structures and the API for sensor management.
+- VL53L0X.c : Implements I2C communication, sequential initialization for multiple sensors, and signal filtering.
+
+2. HARDWARE SETUP
+-----------------
+- Sensor Type: VL53L0X Time-of-Flight laser-ranging module.
+- Interface: I2C (Default 8-bit address: 0x52).
+- Control Pins: Each sensor requires a dedicated XSHUT (Reset/Shutdown) pin to allow for sequential I2C address assignment in multi-sensor configurations.
+- Signal Integrity: Features a median-of-three filter to reduce measurement noise across 4 defined sensor channels.
+
+3. FUNCTIONS
+------------
+- VL53L0X_Init: Powers on a sensor via XSHUT, verifies its ID (0xC0), and optionally assigns a new I2C address to prevent bus conflicts.
+- VL53L0X_AllInit: A high-level routine that resets all connected sensors and prepares them for continuous interrupt-driven ranging at a 30ms interval.
+- VL53L0X_ReadRange: Retrieves the raw 16-bit distance measurement in millimeters.
+- VL53L0X_ReadFiltered: Reads raw data and passes it through a history buffer to calculate a filtered distance value.
+- VL53L0X_StartContinuous: Configures the sensor to perform measurements automatically at a set period without constant MCU polling.
+- Check_Side: A specialized logic function for robotics that calculates the error/offset from a center line based on left and right distance readings.
+
+4. IMPLEMENTATION DETAILS
+-------------------------
+- Sequential Addressing: Because all VL53L0X sensors start with the same I2C address, the driver pulls all XSHUT pins low and then enables/addresses each sensor one by one.
+- Error Handling: Returns 8190mm (max range) if the sensor reports 0mm or 20mm, which are typical indicators of a measurement failure or "out of range" condition.
+- Interrupts: The driver supports "New Sample Ready" hardware interrupts to allow the MCU to process data only when fresh measurements are available.
+
+================================================================================
+Generated for: VL53L0X.h / VL53L0X.c
+================================================================================
