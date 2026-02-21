@@ -1,0 +1,38 @@
+================================================================================
+MODULE: MPU6050 Inertial Measurement Unit (STM32F1 HAL)
+================================================================================
+
+1. FILES
+--------
+- MPU.h : Defines the public API for initialization and data retrieval.
+- MPU.c : Implements I2C communication, gyro calibration, and yaw integration.
+
+2. HARDWARE SETUP
+-----------------
+- Sensor: MPU6050.
+- Interface: I2C (standard 100kHz or 400kHz).
+- I2C Address: 0x68 (shifted left to 0xD0 for HAL compatibility).
+- Sensitivity: Configured for ±2000 deg/s (16.4 LSB/deg/s).
+- Configuration:
+    * Power Management: 0x18.
+    * DLPF (Digital Low Pass Filter): 44Hz.
+    * Sample Rate: 200Hz.
+
+3. FUNCTIONS
+------------
+- MPU_Init: Verifies the sensor identity (WHO_AM_I register) and initializes the power and configuration registers. Returns 1 on success, 0 on failure.
+- MPU_EnableDataReadyInterrupt: Configures the MPU6050 to trigger a hardware interrupt pin whenever new sensor data is available.
+- MPU_CalibrateGyroZ: Samples the Z-axis gyroscope 1000 times while the sensor is stationary to calculate the static offset (bias).
+- MPU_Update: Reads the Z-axis raw data, applies the calibration offset, and integrates the rate of change over time (dt) to update the current yaw angle.
+- MPU_GetYaw: Returns the integrated Z-axis angle (yaw) in degrees, normalized between -180 and 180.
+
+4. IMPLEMENTATION DETAILS
+-------------------------
+- Integration: The driver uses 'HAL_GetTick()' to calculate the time delta (dt) between updates for accurate integration.
+- Interrupt Logic: 'MPU_Update' is designed to be called when the Data Ready bit in the 'INT_STATUS' register is high.
+- Raw Data Conversion: Combines two 8-bit registers (H and L) into a signed 16-bit integer for the Z-axis gyroscope.
+- Angle Normalization: Includes logic to wrap the angle at 180/-180 degrees to maintain a standard heading format.
+
+================================================================================
+Generated for: MPU.h / MPU.c
+================================================================================
