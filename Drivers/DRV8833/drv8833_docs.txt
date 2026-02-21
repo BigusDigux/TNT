@@ -1,0 +1,36 @@
+================================================================================
+MODULE: DRV8833 Dual H-Bridge Motor Driver (STM32F1 HAL)
+================================================================================
+
+1. FILES
+--------
+- drv8833.h : Defines the Motor_HandleTypeDef structure and function prototypes.
+- drv8833.c : Contains implementation for PWM initialization, speed control, and braking.
+
+2. HARDWARE SETUP
+-----------------
+The driver requires a `Motor_HandleTypeDef` struct to be populated with the following:
+- Timer Instance: A HAL Timer pointer (e.g., &htim2).
+- PWM Channels: Specific timer channels for IN1 and IN2 (e.g., TIM_CHANNEL_1).
+- GPIO Config: Port and Pin definitions for the physical connections to the DRV8833.
+- Requirement: The Timer should be configured in PWM Generation mode with an Auto-Reload Register (ARR) of at least 255 for full resolution.
+
+3. FUNCTIONS
+------------
+- DRV8833_Init: Enables PWM signal generation for both motor input channels.
+- DRV8833_SetSpeed: Adjusts motor velocity and direction.
+    * Input range: -255 (Full Reverse) to 255 (Full Forward).
+    * A value of 0 results in a Coast/Stop state.
+- DRV8833_Brake: Forces both inputs high (100% duty cycle) to execute an active electronic brake.
+
+4. IMPLEMENTATION DETAILS
+-------------------------
+- Speed Clamping: The driver includes safety logic to clamp input values exceeding +/- 255.
+- Direction Logic: 
+    * Forward: IN1 is held at 0, while IN2 receives the PWM duty cycle.
+    * Backward: IN1 receives the PWM duty cycle, while IN2 is held at 0.
+- PWM Control: Uses the `__HAL_TIM_SET_COMPARE` macro to update the capture/compare register of the assigned timer channels.
+
+================================================================================
+Generated for: drv8833.h / drv8833.c
+================================================================================
