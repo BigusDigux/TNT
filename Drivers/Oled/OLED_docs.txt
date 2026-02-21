@@ -1,0 +1,37 @@
+================================================================================
+MODULE: SSD1306 OLED Display Driver (STM32F1 HAL)
+================================================================================
+
+1. FILES
+--------
+- OLED.h : Contains the public interface for display initialization, clearing, and text rendering.
+- OLED.c : Implements I2C communication commands, a custom 5x7 bitmap font, and string formatting.
+
+2. HARDWARE SETUP
+-----------------
+- Display Type: 128x32 OLED (SSD1306 controller).
+- Interface: I2C (Bus address 0x78).
+- External Reference: Requires an initialized I2C_HandleTypeDef pointer named 'OLED_hi2c'.
+- Memory Mode: Uses Page Addressing mode (divided into 4 horizontal pages for 32px height).
+
+3. FUNCTIONS
+------------
+- OLED_Init: Transmits a sequence of 11 commands to configure the display, including enabling the charge pump and setting the multiplex ratio.
+- OLED_Clear: Iterates through all 4 pages and 128 columns, sending 0x00 data to blank the entire screen.
+- OLED_Print: Renders a character string at a specific page (row) and column.
+    * Automatically handles character spacing.
+    * Clears the remainder of the row after the string is printed to prevent "ghosting" from previous text.
+- OLED_PrintInt: A helper function that converts a 16-bit integer into a string using 'sprintf' before calling OLED_Print.
+
+4. IMPLEMENTATION DETAILS
+-------------------------
+- Font Engine: Uses a static 5x7 pixel lookup table (`font5x7`) covering standard ASCII characters starting from the 'space' character (index 32).
+- Command vs Data: 
+    * I2C transmissions starting with 0x00 are interpreted as hardware commands.
+    * I2C transmissions starting with 0x40 are interpreted as pixel data.
+- Memory Map: For a 128x32 display, the driver manages the vertical space in "Pages" (B0 to B3), where each page represents an 8-pixel high horizontal strip.
+
+
+================================================================================
+Generated for: OLED.h / OLED.c
+================================================================================
