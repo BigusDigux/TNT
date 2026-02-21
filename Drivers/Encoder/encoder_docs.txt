@@ -1,0 +1,34 @@
+================================================================================
+MODULE: Quadrature Encoder Driver (STM32F1 HAL)
+================================================================================
+
+1. FILES
+--------
+- encoder.h : Contains function prototypes for encoder initialization and reading.
+- encoder.c : Implements logic for dual-channel encoder management using hardware timers.
+
+2. HARDWARE SETUP
+-----------------
+The driver is hard-coded to interface with specific hardware timers:
+- Right Encoder: Assigned to Timer 1 (htim1).
+- Left Encoder: Assigned to Timer 3 (htim3).
+- Mode: Both timers must be configured in "Encoder Mode" within STM32CubeMX, typically utilizing both Channel 1 and Channel 2 for quadrature signals.
+
+3. FUNCTIONS
+------------
+- ENCODER_Init: Enables the hardware encoder interface for both timers and initializes their counters to zero.
+- ENCODER_GetLeft: Returns the current displacement value for the left motor (Timer 3).
+- ENCODER_GetRight: Returns the current displacement value for the right motor (Timer 1).
+- ENCODER_ResetLeft: Resets the left encoder counter to zero.
+- ENCODER_ResetRight: Resets the right encoder counter to zero.
+- ENCODER_Reset: A global reset function that clears both left and right counters simultaneously.
+
+4. IMPLEMENTATION DETAILS
+-------------------------
+- Data Handling: The driver retrieves the 16-bit hardware counter value and casts it to a signed 16-bit integer (int16_t) before returning it as a 32-bit integer (int32_t). This ensures that backward rotation (where the counter decrements below 0) is correctly interpreted as a negative value.
+- Hardware Abstraction: The module relies on 'extern' references to 'htim1' and 'htim3', meaning these timer handles must be defined and initialized in 'main.c' or the HAL configuration files.
+- Channel Configuration: The driver starts both encoders using 'TIM_CHANNEL_ALL', ensuring all necessary quadrature input channels are active.
+
+================================================================================
+Generated for: encoder.h / encoder.c
+================================================================================
